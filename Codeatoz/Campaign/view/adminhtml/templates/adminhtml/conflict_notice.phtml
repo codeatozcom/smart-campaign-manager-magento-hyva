@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Codeatoz Campaign — Notices above the campaign grid.
+ * Shows conflict warning when multiple campaigns are active simultaneously.
+ * Shows upcoming notice when scheduled campaigns are about to start.
+ *
+ * @var \Codeatoz\Campaign\Block\Adminhtml\Campaign\ConflictNotice $block
+ */
+
+$conflicts = $block->getConflictingCampaigns();
+$upcoming  = $block->getUpcomingCampaigns();
+
+if (empty($conflicts) && empty($upcoming)) {
+    return;
+}
+?>
+
+<?php if (!empty($conflicts)): ?>
+<div style="margin:0 0 12px;padding:14px 18px;background:#fff8e5;border:1px solid #f0b429;border-left:4px solid #f0b429;border-radius:4px;display:flex;align-items:flex-start;gap:12px;">
+    <span style="font-size:20px;line-height:1;margin-top:1px;flex-shrink:0;">⚠️</span>
+    <div style="flex:1;">
+        <strong style="display:block;font-size:14px;color:#7d4e00;margin-bottom:4px;">
+            <?= $block->escapeHtml(__('%1 campaigns are active at the same time.', count($conflicts))) ?>
+        </strong>
+        <p style="font-size:13px;color:#7d4e00;margin:0 0 8px;">
+            <?= $block->escapeHtml(__('Only the highest-priority campaign will show on the storefront. Deactivate unused campaigns or adjust their priorities.')) ?>
+        </p>
+        <ul style="margin:0;padding:0 0 0 18px;font-size:13px;color:#7d4e00;">
+            <?php foreach ($conflicts as $campaign): ?>
+            <li style="margin-bottom:3px;">
+                <a href="<?= $block->escapeUrl($block->getEditUrl((int) $campaign->getCampaignId())) ?>"
+                   style="color:#b45309;font-weight:600;text-decoration:underline;">
+                    <?= $block->escapeHtml($campaign->getName()) ?>
+                </a>
+                &nbsp;<?= $block->escapeHtml(__('(Priority: %1)', $campaign->getPriority())) ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if (!empty($upcoming)): ?>
+<div style="margin:0 0 12px;padding:14px 18px;background:#e8f0fe;border:1px solid #aecbfa;border-left:4px solid #1a73e8;border-radius:4px;display:flex;align-items:flex-start;gap:12px;">
+    <span style="font-size:20px;line-height:1;margin-top:1px;flex-shrink:0;">📅</span>
+    <div style="flex:1;">
+        <strong style="display:block;font-size:14px;color:#1a237e;margin-bottom:4px;">
+            <?= $block->escapeHtml(__('%1 upcoming campaign(s) scheduled to start soon.', count($upcoming))) ?>
+        </strong>
+        <ul style="margin:0;padding:0 0 0 18px;font-size:13px;color:#1a237e;">
+            <?php foreach ($upcoming as $campaign): ?>
+            <li style="margin-bottom:3px;">
+                <a href="<?= $block->escapeUrl($block->getEditUrl((int) $campaign->getCampaignId())) ?>"
+                   style="color:#1a73e8;font-weight:600;text-decoration:underline;">
+                    <?= $block->escapeHtml($campaign->getName()) ?>
+                </a>
+                &nbsp;<?= $block->escapeHtml(__('— starts %1', $block->formatCampaignDate($campaign->getStartDate()))) ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
+<?php endif; ?>

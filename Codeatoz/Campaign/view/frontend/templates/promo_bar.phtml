@@ -1,0 +1,155 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Codeatoz Campaign — Promo Bar
+ * Compatible with Hyvä (Alpine.js) and standard Magento themes (Luma/Blank).
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Codeatoz\Campaign\ViewModel\CampaignProvider $viewModel
+ */
+
+$viewModel = $block->getData('view_model');
+
+if (!$viewModel->isPromoBarEnabled()) {
+    return;
+}
+
+$config     = $viewModel->getPromoBarConfig();
+$text       = (string) ($config['text']           ?? '');
+$bgColor    = (string) ($config['bg_color']        ?? '#e63946');
+$textColor  = (string) ($config['text_color']      ?? '#ffffff');
+$closable   = (bool)   ($config['closable']        ?? false);
+$showTimer  = (bool)   ($config['show_countdown']  ?? false);
+$dealUrl    = (string) ($config['deal_url']         ?? '');
+$dealLabel  = (string) ($config['deal_label']       ?? 'Shop Now');
+$endDate    = $viewModel->getCampaignEndDate() ?? '';
+$campaignId = (int) ($viewModel->getActiveCampaign()?->getCampaignId() ?? 0);
+
+if (empty($text)) {
+    return;
+}
+
+$bgColor   = preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $bgColor)   ? $bgColor   : '#e63946';
+$textColor = preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $textColor) ? $textColor : '#ffffff';
+$dealLabel = !empty(trim($dealLabel)) ? $dealLabel : 'Shop Now';
+$storageKey = 'codeatoz_promo_dismissed_' . $campaignId;
+$hasButton  = !empty($dealUrl);
+?>
+<div
+    id="codeatoz-promo-bar"
+    style="background-color:<?= $block->escapeHtmlAttr($bgColor) ?>;color:<?= $block->escapeHtmlAttr($textColor) ?>;width:100%;position:relative;z-index:9999;display:none;"
+    role="banner"
+    aria-label="<?= $block->escapeHtmlAttr(__('Promotional announcement')) ?>"
+>
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:10px <?= $closable ? '48px' : '16px' ?> 10px 16px;min-height:44px;box-sizing:border-box;flex-wrap:wrap;">
+
+        <span style="font-size:14px;font-weight:500;line-height:1.4;text-align:center;">
+            <?= $block->escapeHtml($text) ?>
+        </span>
+
+        <?php if ($showTimer && !empty($endDate)): ?>
+        <span
+            id="codeatoz-countdown"
+            style="font-size:13px;font-weight:700;letter-spacing:0.03em;white-space:nowrap;opacity:0.92;display:none;"
+            aria-live="polite"
+        ></span>
+        <span
+            id="codeatoz-expired"
+            style="font-size:13px;font-weight:600;opacity:0.85;display:none;"
+        ><?= $block->escapeHtml(__('Offer expired')) ?></span>
+        <?php endif; ?>
+
+        <?php if ($hasButton): ?>
+        <a
+            href="<?= $block->escapeUrl($dealUrl) ?>"
+            style="display:inline-block;padding:5px 16px;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap;border-radius:3px;border:2px solid <?= $block->escapeHtmlAttr($textColor) ?>;color:<?= $block->escapeHtmlAttr($bgColor) ?>;background-color:<?= $block->escapeHtmlAttr($textColor) ?>;text-decoration:none;letter-spacing:0.03em;"
+        ><?= $block->escapeHtml(__($dealLabel)) ?></a>
+        <?php endif; ?>
+
+    </div>
+
+    <?php if ($closable): ?>
+    <button
+        id="codeatoz-promo-close"
+        type="button"
+        style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px 6px;line-height:1;font-size:20px;color:<?= $block->escapeHtmlAttr($textColor) ?>;opacity:0.75;"
+        aria-label="<?= $block->escapeHtmlAttr(__('Close promotional bar')) ?>"
+    >&#215;</button>
+    <?php endif; ?>
+</div>
+
+<script>
+(function () {
+    var BAR         = document.getElementById('codeatoz-promo-bar');
+    var STORAGE_KEY = '<?= $block->escapeJs($storageKey) ?>';
+    var END_DATE    = '<?= $block->escapeJs($endDate) ?>';
+    var SHOW_TIMER  = <?= ($showTimer && !empty($endDate)) ? 'true' : 'false' ?>;
+    var CLOSABLE    = <?= $closable ? 'true' : 'false' ?>;
+    var timer       = null;
+
+    function show() {
+        BAR.style.display = 'block';
+        if (SHOW_TIMER) { startCountdown(); }
+    }
+
+    function hide() {
+        BAR.style.display = 'none';
+        if (timer) clearInterval(timer);
+    }
+
+    function startCountdown() {
+        var cdEl  = document.getElementById('codeatoz-countdown');
+        var expEl = document.getElementById('codeatoz-expired');
+        if (!cdEl) return;
+
+        function tick() {
+            var diff = new Date(END_DATE).getTime() - Date.now();
+            if (diff <= 0) {
+                cdEl.style.display  = 'none';
+                if (expEl) expEl.style.display = 'inline';
+                hide();
+                clearInterval(timer);
+                return;
+            }
+            var d = Math.floor(diff / 86400000);
+            var h = Math.floor((diff % 86400000) / 3600000);
+            var m = Math.floor((diff % 3600000)  / 60000);
+            var s = Math.floor((diff % 60000)    / 1000);
+            var p = function(n){ return String(n).padStart(2,'0'); };
+            cdEl.textContent = d > 0
+                ? d + 'd ' + p(h) + 'h ' + p(m) + 'm ' + p(s) + 's'
+                : p(h) + ':' + p(m) + ':' + p(s);
+            cdEl.style.display = 'inline';
+        }
+
+        tick();
+        timer = setInterval(tick, 1000);
+    }
+
+    // Check localStorage dismissal
+    try {
+        var dismissed = localStorage.getItem(STORAGE_KEY);
+        if (dismissed) {
+            var hoursSince = (Date.now() - parseInt(dismissed, 10)) / 3600000;
+            if (hoursSince < 24) return; // Still within 24h — keep hidden
+            localStorage.removeItem(STORAGE_KEY);
+        }
+    } catch (e) {}
+
+    // Show bar
+    show();
+
+    // Close button
+    if (CLOSABLE) {
+        var closeBtn = document.getElementById('codeatoz-promo-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                hide();
+                try { localStorage.setItem(STORAGE_KEY, String(Date.now())); } catch (e) {}
+            });
+        }
+    }
+}());
+</script>

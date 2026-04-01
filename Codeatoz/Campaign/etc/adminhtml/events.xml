@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="codeatoz_campaign_model_save_commit_after">
+        <observer name="codeatoz_campaign_clear_cache_on_save"
+                  instance="Codeatoz\Campaign\Observer\ClearCacheObserver"/>
+    </event>
+    <event name="codeatoz_campaign_model_delete_after">
+        <observer name="codeatoz_campaign_clear_cache_on_delete"
+                  instance="Codeatoz\Campaign\Observer\ClearCacheObserver"/>
+    </event>
+</config>

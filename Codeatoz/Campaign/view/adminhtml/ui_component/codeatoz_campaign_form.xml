@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">codeatoz_campaign_form.codeatoz_campaign_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Campaign Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+
+    <settings>
+        <buttons>
+            <button name="back"             class="Codeatoz\Campaign\Block\Adminhtml\Campaign\Edit\BackButton"/>
+            <button name="preview"          class="Codeatoz\Campaign\Block\Adminhtml\Campaign\Edit\PreviewButton"/>
+            <button name="save_and_continue" class="Codeatoz\Campaign\Block\Adminhtml\Campaign\Edit\SaveAndContinueButton"/>
+            <button name="save"             class="Codeatoz\Campaign\Block\Adminhtml\Campaign\Edit\SaveButton"/>
+        </buttons>
+        <namespace>codeatoz_campaign_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>codeatoz_campaign_form.codeatoz_campaign_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="codeatoz_campaign_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="codeatoz_campaign/campaign/save"/>
+        </settings>
+        <dataProvider class="Codeatoz\Campaign\Ui\DataProvider\CampaignFormDataProvider"
+                      name="codeatoz_campaign_form_data_source">
+            <settings>
+                <requestFieldName>campaign_id</requestFieldName>
+                <primaryFieldName>campaign_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- ═══════════════════════════════════════════
+         FIELDSET 1 — General Settings
+    ════════════════════════════════════════════════ -->
+    <fieldset name="general">
+        <settings>
+            <collapsible>false</collapsible>
+            <opened>true</opened>
+            <label translate="true">General Settings</label>
+            <dataScope></dataScope>
+        </settings>
+
+        <field name="campaign_id" formElement="hidden">
+            <settings>
+                <dataType>text</dataType>
+                <dataScope>campaign_id</dataScope>
+            </settings>
+        </field>
+
+        <field name="name" sortOrder="10" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Campaign Name</label>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <!-- Campaign Type -->
+        <field name="campaign_type" sortOrder="15" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">general</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>select</dataType>
+                <label translate="true">Campaign Type</label>
+                <dataScope>campaign_type</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Codeatoz\Campaign\Model\Source\CampaignType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <!-- Status -->
+        <field name="status" sortOrder="20" formElement="select">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+                <dataScope>status</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Codeatoz\Campaign\Model\Source\Status"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+
+        <field name="start_date" sortOrder="30" formElement="date">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Start Date</label>
+                <dataScope>start_date</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <date>
+                    <settings>
+                        <options>
+                            <option name="dateFormat" xsi:type="string">yyyy-MM-dd HH:mm:ss</option>
+                            <option name="showsTime" xsi:type="boolean">true</option>
+                        </options>
+                    </settings>
+                </date>
+            </formElements>
+        </field>
+
+        <field name="end_date" sortOrder="40" formElement="date">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">End Date</label>
+                <dataScope>end_date</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <date>
+                    <settings>
+                        <options>
+                            <option name="dateFormat" xsi:type="string">yyyy-MM-dd HH:mm:ss</option>
+                            <option name="showsTime" xsi:type="boolean">true</option>
+                        </options>
+                    </settings>
+                </date>
+            </formElements>
+        </field>
+
+        <field name="priority" sortOrder="50" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Priority</label>
+                <dataScope>priority</dataScope>
+                <tooltip>
+                    <description translate="true">Higher number = higher priority. When multiple campaigns overlap, the one with the highest priority wins.</description>
+                </tooltip>
+                <validation>
+                    <rule name="validate-integer" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+    </fieldset>
+
+    <!-- ═══════════════════════════════════════════
+         FIELDSET 2 — Promo Bar Settings
+    ════════════════════════════════════════════════ -->
+    <fieldset name="promo_bar">
+        <settings>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+            <label translate="true">Promo Bar Settings</label>
+            <dataScope></dataScope>
+        </settings>
+
+        <field name="promo_bar_enabled" sortOrder="10" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable Promo Bar</label>
+                <dataScope>promo_bar_enabled</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <field name="promo_bar_text" sortOrder="20" formElement="textarea">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Promo Bar Message</label>
+                <dataScope>promo_bar_text</dataScope>
+                <notice translate="true">The main message displayed in the promo bar. Max 255 characters.</notice>
+                <validation>
+                    <rule name="max_text_length" xsi:type="number">255</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="promo_bar_bg_color" sortOrder="30" formElement="colorPicker">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">#e63946</item>
+                    <item name="colorPickerMode" xsi:type="string">full</item>
+                    <item name="colorFormat" xsi:type="string">hex</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Background Color</label>
+                <dataScope>promo_bar_bg_color</dataScope>
+            </settings>
+        </field>
+
+        <field name="promo_bar_text_color" sortOrder="40" formElement="colorPicker">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">#ffffff</item>
+                    <item name="colorPickerMode" xsi:type="string">full</item>
+                    <item name="colorFormat" xsi:type="string">hex</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Text Color</label>
+                <dataScope>promo_bar_text_color</dataScope>
+            </settings>
+        </field>
+
+        <field name="promo_bar_show_countdown" sortOrder="50" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Show Countdown Timer</label>
+                <dataScope>promo_bar_show_countdown</dataScope>
+                <notice translate="true">Displays a live countdown to the campaign end date in the promo bar.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <field name="promo_bar_closable" sortOrder="60" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Allow Visitor to Close Bar</label>
+                <dataScope>promo_bar_closable</dataScope>
+                <notice translate="true">Shows an × button so visitors can dismiss the promo bar.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <!-- Deal Page URL -->
+        <field name="promo_bar_deal_url" sortOrder="70" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Deal Page URL</label>
+                <dataScope>promo_bar_deal_url</dataScope>
+                <notice translate="true">Optional. Adds a button to the promo bar linking here. Use a relative path (e.g. /sale) or full URL (https://...).</notice>
+                <validation>
+                    <rule name="max_text_length" xsi:type="number">2048</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <!-- Button Label -->
+        <field name="promo_bar_deal_label" sortOrder="80" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">Shop Now</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Button Label</label>
+                <dataScope>promo_bar_deal_label</dataScope>
+                <notice translate="true">Text shown on the deal button. Defaults to "Shop Now".</notice>
+                <validation>
+                    <rule name="max_text_length" xsi:type="number">50</rule>
+                </validation>
+            </settings>
+        </field>
+
+    </fieldset>
+
+    <!-- ═══════════════════════════════════════════
+         FIELDSET 3 — Product Badge Settings
+    ════════════════════════════════════════════════ -->
+    <fieldset name="product_badge">
+        <settings>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+            <label translate="true">Product Badge Settings</label>
+            <dataScope></dataScope>
+        </settings>
+
+        <field name="product_badge_enabled" sortOrder="10" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable Product Badge</label>
+                <dataScope>product_badge_enabled</dataScope>
+                <notice translate="true">Overlays a text badge on product images on the PDP.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <field name="product_badge_text" sortOrder="20" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">SALE</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Badge Text</label>
+                <dataScope>product_badge_text</dataScope>
+                <notice translate="true">Short label shown on the badge. Max 50 characters. e.g. SALE, HOT, NEW</notice>
+                <validation>
+                    <rule name="max_text_length" xsi:type="number">50</rule>
+                </validation>
+            </settings>
+        </field>
+
+    </fieldset>
+
+</form>

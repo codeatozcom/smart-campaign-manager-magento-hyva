@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">codeatoz_campaign_listing.codeatoz_campaign_listing_data_source</item>
+        </item>
+    </argument>
+
+    <settings>
+        <spinner>codeatoz_campaign_columns</spinner>
+        <deps>
+            <dep>codeatoz_campaign_listing.codeatoz_campaign_listing_data_source</dep>
+        </deps>
+        <buttons>
+            <button name="add">
+                <url path="*/*/new"/>
+                <class>primary</class>
+                <label translate="true">Create New Campaign</label>
+            </button>
+        </buttons>
+    </settings>
+
+    <dataSource name="codeatoz_campaign_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">campaign_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Codeatoz_Campaign::campaign_manage</aclResource>
+        <dataProvider class="Codeatoz\Campaign\Ui\DataProvider\CampaignDataProvider"
+                      name="codeatoz_campaign_listing_data_source">
+            <settings>
+                <requestFieldName>campaign_id</requestFieldName>
+                <primaryFieldName>campaign_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+
+    <columns name="codeatoz_campaign_columns">
+        <settings>
+            <storageConfig>
+                <param name="provider" xsi:type="string">codeatoz_campaign_listing.codeatoz_campaign_listing.listing_top.bookmarks</param>
+                <param name="namespace" xsi:type="string">current</param>
+            </storageConfig>
+            <childDefaults>
+                <param name="storageConfig" xsi:type="array">
+                    <item name="provider" xsi:type="string">codeatoz_campaign_listing.codeatoz_campaign_listing.listing_top.bookmarks</item>
+                    <item name="root" xsi:type="string">columns.${ $.index }</item>
+                    <item name="namespace" xsi:type="string">current.${ $.storageConfig.root}</item>
+                </param>
+            </childDefaults>
+        </settings>
+
+        <column name="campaign_id">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+
+        <column name="name">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Campaign Name</label>
+            </settings>
+        </column>
+
+        <column name="campaign_type" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="Codeatoz\Campaign\Model\Source\CampaignType"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Type</label>
+            </settings>
+        </column>
+
+        <!-- Colored status badge column -->
+        <column name="status" class="Codeatoz\Campaign\Ui\Component\Listing\Column\StatusBadge">
+            <settings>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <options class="Codeatoz\Campaign\Model\Source\Status"/>
+            </settings>
+        </column>
+
+        <column name="start_date" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Start Date</label>
+            </settings>
+        </column>
+
+        <column name="end_date" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">End Date</label>
+            </settings>
+        </column>
+
+        <column name="priority">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Priority</label>
+            </settings>
+        </column>
+
+        <actionsColumn name="actions" class="Codeatoz\Campaign\Ui\Component\Listing\Column\CampaignActions">
+            <settings>
+                <indexField>campaign_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>240</resizeDefaultWidth>
+            </settings>
+        </actionsColumn>
+
+    </columns>
+</listing>

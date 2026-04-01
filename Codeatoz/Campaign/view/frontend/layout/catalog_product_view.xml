@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!--
+            Hyvä PDP: inject badge into the product media gallery area.
+            We inject into 'after.body.start' using the same Alpine.js DOM
+            approach as CLP — this works regardless of Hyvä version since
+            it doesn't depend on any specific block name existing.
+        -->
+        <referenceContainer name="after.body.start">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="codeatoz.campaign.product.badge.pdp"
+                   template="Codeatoz_Campaign::product_badge_pdp.phtml"
+                   after="-">
+                <arguments>
+                    <argument name="view_model"
+                              xsi:type="object">Codeatoz\Campaign\ViewModel\CampaignProvider</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

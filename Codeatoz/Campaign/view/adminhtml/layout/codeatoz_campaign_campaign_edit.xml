@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <uiComponent name="codeatoz_campaign_form"/>
+        </referenceContainer>
+
+        <!--
+            Load the preview script on this page only.
+            Uses a block to inject a <script> tag that calls require()
+            so the modal library is ready before codeatozOpenPreview() is called.
+        -->
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="codeatoz.campaign.preview.script"
+                   template="Codeatoz_Campaign::preview_script.phtml"
+                   after="-"/>
+        </referenceContainer>
+    </body>
+</page>

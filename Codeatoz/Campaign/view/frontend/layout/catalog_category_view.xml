@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!--
+            Hyvä CLP badge injection.
+            Hyvä renders product cards via Alpine.js — standard Magento block
+            injection into product_list_item does not work reliably.
+            Instead we inject a block at the bottom of the page that uses
+            x-init to append badges to all product image wrappers after Alpine renders.
+        -->
+        <referenceContainer name="after.body.start">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="codeatoz.campaign.product.badge.clp"
+                   template="Codeatoz_Campaign::product_badge_clp.phtml"
+                   after="-">
+                <arguments>
+                    <argument name="view_model"
+                              xsi:type="object">Codeatoz\Campaign\ViewModel\CampaignProvider</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

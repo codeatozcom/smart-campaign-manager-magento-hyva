@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Codeatoz Campaign — Product Badge for Category / Search pages
+ * Compatible with Hyvä and standard Magento themes (Luma/Blank).
+ * Uses vanilla JS + MutationObserver — no Alpine.js dependency.
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Codeatoz\Campaign\ViewModel\CampaignProvider $viewModel
+ */
+
+$viewModel = $block->getData('view_model');
+
+if (!$viewModel->isProductBadgeEnabled()) {
+    return;
+}
+
+$config    = $viewModel->getProductBadgeConfig();
+$badgeText = trim((string) ($config['text'] ?? 'SALE'));
+
+if (empty($badgeText)) {
+    return;
+}
+
+$badgeText = mb_substr($badgeText, 0, 50);
+?>
+<script>
+(function () {
+    var BADGE_TEXT = '<?= $block->escapeJs($badgeText) ?>';
+
+    var BADGE_STYLE = [
+        'position:absolute',
+        'top:8px',
+        'left:8px',
+        'z-index:20',
+        'background-color:#e63946',
+        'color:#ffffff',
+        'padding:4px 10px',
+        'font-size:11px',
+        'font-weight:700',
+        'line-height:1.4',
+        'letter-spacing:0.06em',
+        'text-transform:uppercase',
+        'border-radius:3px',
+        'pointer-events:none',
+        'user-select:none',
+        'white-space:nowrap',
+        'box-shadow:0 1px 3px rgba(0,0,0,0.18)',
+    ].join(';');
+
+    function injectAll() {
+        // Hyvä: a.product-item-photo (confirmed via DOM inspection)
+        // Luma/Blank: .product-item-photo, .product-image-container
+        var wrappers = document.querySelectorAll(
+            'a.product-item-photo, ' +
+            '.product-item-photo, ' +
+            '.product-image-container'
+        );
+
+        wrappers.forEach(function (wrapper) {
+            if (wrapper.querySelector('.codeatoz-product-badge')) return;
+
+            var pos = window.getComputedStyle(wrapper).position;
+            if (pos === 'static') wrapper.style.position = 'relative';
+
+            var badge = document.createElement('span');
+            badge.className  = 'codeatoz-product-badge';
+            badge.style.cssText = BADGE_STYLE;
+            badge.setAttribute('aria-hidden', 'true');
+            badge.textContent = BADGE_TEXT;
+            wrapper.appendChild(badge);
+        });
+    }
+
+    // Run on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', injectAll);
+    } else {
+        injectAll();
+    }
+
+    // Watch for dynamic DOM changes (Alpine.js render, pagination, filters)
+    var observer = new MutationObserver(function (mutations) {
+        var relevant = mutations.some(function (m) { return m.addedNodes.length > 0; });
+        if (relevant) injectAll();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+}());
+</script>

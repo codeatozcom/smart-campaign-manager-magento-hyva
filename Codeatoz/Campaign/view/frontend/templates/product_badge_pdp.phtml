@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Codeatoz Campaign — Product Badge for PDP
+ * Compatible with Hyvä and standard Magento themes (Luma/Blank).
+ * Uses vanilla JS — no Alpine.js dependency.
+ *
+ * Confirmed Hyvä PDP DOM: img direct parent is div.relative.mb-6
+ * Luma/Blank PDP: .product-image-container wraps the main image
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Codeatoz\Campaign\ViewModel\CampaignProvider $viewModel
+ */
+
+$viewModel = $block->getData('view_model');
+
+if (!$viewModel->isProductBadgeEnabled()) {
+    return;
+}
+
+$config    = $viewModel->getProductBadgeConfig();
+$badgeText = trim((string) ($config['text'] ?? 'SALE'));
+
+if (empty($badgeText)) {
+    return;
+}
+
+$badgeText = mb_substr($badgeText, 0, 50);
+?>
+<script>
+(function () {
+    var BADGE_TEXT = '<?= $block->escapeJs($badgeText) ?>';
+
+    var BADGE_STYLE = [
+        'position:absolute',
+        'top:8px',
+        'left:8px',
+        'z-index:100',
+        'background-color:#e63946',
+        'color:#ffffff',
+        'padding:4px 12px',
+        'font-size:13px',
+        'font-weight:700',
+        'line-height:1.4',
+        'letter-spacing:0.06em',
+        'text-transform:uppercase',
+        'border-radius:3px',
+        'pointer-events:none',
+        'user-select:none',
+        'white-space:nowrap',
+        'box-shadow:0 1px 3px rgba(0,0,0,0.18)',
+    ].join(';');
+
+    function inject() {
+        // Find the main product image on this page
+        var img = document.querySelector(
+            'img.product-image-photo, ' +
+            'img[src*="catalog/product"]'
+        );
+        if (!img) return false;
+
+        // Hyvä: img direct parent is div.relative.mb-6
+        // Luma: img is inside span.product-image-wrapper inside .product-image-container
+        // Try closest named container first, fall back to direct parent
+        var wrapper = img.closest('.product-image-container')
+                   || img.closest('.product.media')
+                   || img.parentElement;
+
+        if (!wrapper) return false;
+        if (wrapper.querySelector('.codeatoz-product-badge')) return true;
+
+        var pos = window.getComputedStyle(wrapper).position;
+        if (pos === 'static') wrapper.style.position = 'relative';
+
+        var badge = document.createElement('span');
+        badge.className  = 'codeatoz-product-badge';
+        badge.style.cssText = BADGE_STYLE;
+        badge.setAttribute('aria-hidden', 'true');
+        badge.textContent = BADGE_TEXT;
+        wrapper.appendChild(badge);
+        return true;
+    }
+
+    // Poll until image is in DOM (Hyvä gallery loads asynchronously)
+    var attempts = 0;
+    var interval = setInterval(function () {
+        attempts++;
+        if (inject() || attempts > 40) clearInterval(interval);
+    }, 100);
+}());
+</script>

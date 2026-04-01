@@ -1,0 +1,26 @@
+{
+    "codeatoz_campaign": {
+        "column": {
+            "campaign_id": true,
+            "name": true,
+            "campaign_type": true,
+            "status": true,
+            "start_date": true,
+            "end_date": true,
+            "priority": true,
+            "config_json": true,
+            "store_ids": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        },
+        "index": {
+            "CODEATOZ_CAMPAIGN_STATUS": true,
+            "CODEATOZ_CAMPAIGN_START_DATE": true,
+            "CODEATOZ_CAMPAIGN_END_DATE": true,
+            "CODEATOZ_CAMPAIGN_STATUS_START_END": true
+        }
+    }
+}

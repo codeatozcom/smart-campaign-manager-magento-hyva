@@ -1,0 +1,104 @@
+<?php declare(strict_types=1);
+/**
+ * Codeatoz Campaign — Promo Bar Preview
+ * Inline script — loaded at bottom of edit page via layout XML.
+ * Registers window.codeatozOpenPreview immediately on DOM ready.
+ */
+?>
+<script type="text/javascript">
+(function () {
+    function initPreview($, registry, modal) {
+        window.codeatozOpenPreview = function () {
+            var ns = 'codeatoz_campaign_form.codeatoz_campaign_form';
+
+            var getVal = function (field) {
+                try {
+                    var paths = [
+                        ns + '.general.' + field,
+                        ns + '.promo_bar.' + field,
+                        ns + '.product_badge.' + field,
+                        ns + '.' + field
+                    ];
+                    for (var i = 0; i < paths.length; i++) {
+                        var c = registry.get(paths[i]);
+                        if (c && typeof c.value === 'function') {
+                            var v = c.value();
+                            if (v !== null && v !== undefined && v !== '') return String(v);
+                        }
+                    }
+                } catch (e) {}
+                // DOM fallback
+                return $('input[name="' + field + '"], textarea[name="' + field + '"]').val() || '';
+            };
+
+            var getBool = function (field) {
+                var v = getVal(field);
+                if (v === '' || v === null) {
+                    // Try checkbox DOM
+                    var el = $('input[type="checkbox"][name="' + field + '"]');
+                    return el.length ? el.is(':checked') : false;
+                }
+                return v === '1' || v === 1 || v === true || v === 'true';
+            };
+
+            var text      = getVal('promo_bar_text')      || 'Your promo message will appear here';
+            var bgColor   = getVal('promo_bar_bg_color')   || '#e63946';
+            var textColor = getVal('promo_bar_text_color') || '#ffffff';
+            var dealUrl   = getVal('promo_bar_deal_url')   || '';
+            var dealLabel = getVal('promo_bar_deal_label') || 'Shop Now';
+            var closable  = getBool('promo_bar_closable');
+            var enabled   = getBool('status');
+
+            var hexRe = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+            if (!hexRe.test(bgColor))   bgColor   = '#e63946';
+            if (!hexRe.test(textColor)) textColor = '#ffffff';
+            if (!dealLabel.trim())      dealLabel = 'Shop Now';
+
+            var esc = function (s) { return $('<div>').text(s).html(); };
+
+            var btnHtml = dealUrl
+                ? '<a href="#" onclick="return false;" style="display:inline-block;padding:5px 16px;'
+                  + 'font-size:13px;font-weight:700;border-radius:3px;border:2px solid ' + textColor + ';'
+                  + 'color:' + bgColor + ';background-color:' + textColor + ';text-decoration:none;'
+                  + 'margin-left:8px;white-space:nowrap;">' + esc(dealLabel) + '</a>'
+                : '';
+
+            var closeHtml = closable
+                ? '<span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);'
+                  + 'font-size:20px;opacity:0.75;cursor:default;color:' + textColor + ';">&#215;</span>'
+                : '';
+
+            var warningHtml = !enabled
+                ? '<p style="margin:10px 0 0;font-size:12px;color:#b30000;text-align:center;">'
+                  + '&#9888; Promo bar is currently <strong>disabled</strong>.</p>'
+                : '';
+
+            var barHtml = '<div style="background-color:' + bgColor + ';color:' + textColor + ';'
+                + 'width:100%;position:relative;padding:10px ' + (closable ? '48px' : '16px') + ' 10px 16px;'
+                + 'min-height:44px;box-sizing:border-box;display:flex;align-items:center;'
+                + 'justify-content:center;gap:16px;flex-wrap:wrap;">'
+                + '<span style="font-size:14px;font-weight:500;line-height:1.4;text-align:center;">'
+                + esc(text) + '</span>' + btnHtml + closeHtml + '</div>';
+
+            var content = '<div><p style="font-size:12px;color:#666;margin:0 0 10px;">Live preview — based on current form values.</p>'
+                + barHtml + warningHtml + '</div>';
+
+            $('#codeatoz-preview-modal').remove();
+            var $m = $('<div id="codeatoz-preview-modal">' + content + '</div>');
+            $('body').append($m);
+            modal({
+                type: 'popup',
+                responsive: true,
+                innerScroll: false,
+                title: $.mage.__('Promo Bar Preview'),
+                buttons: [{ text: $.mage.__('Close'), class: 'action-secondary action-dismiss', click: function () { this.closeModal(); } }]
+            }, $m);
+            $m.modal('openModal');
+        };
+    }
+
+    require(['jquery', 'uiRegistry', 'Magento_Ui/js/modal/modal'], function ($, registry, modal) {
+        initPreview($, registry, modal);
+    });
+}());
+</script>

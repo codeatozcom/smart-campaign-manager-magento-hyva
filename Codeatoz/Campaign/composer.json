@@ -1,0 +1,23 @@
+{
+  "name": "codeatoz/module-campaign",
+  "description": "Hyvä Smart Campaign Builder Free Edition",
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "license": "OSL-3.0",
+  "require": {
+    "php": ">=8.1",
+    "magento/framework": ">=102.0",
+    "magento/module-backend": "*",
+    "magento/module-store": "*",
+    "magento/module-ui": "*",
+    "magento/module-catalog": "*"
+  },
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Codeatoz\\Campaign\\": ""
+    }
+  }
+}

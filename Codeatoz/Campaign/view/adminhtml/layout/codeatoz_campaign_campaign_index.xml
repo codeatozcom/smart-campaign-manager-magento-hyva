@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <!-- Stats bar: Active / Scheduled / Draft / Expired counts -->
+            <block class="Codeatoz\Campaign\Block\Adminhtml\Campaign\StatsBar"
+                   name="codeatoz.campaign.stats.bar"
+                   before="-"/>
+            <!-- Conflict + upcoming notices -->
+            <block class="Codeatoz\Campaign\Block\Adminhtml\Campaign\ConflictNotice"
+                   name="codeatoz.campaign.conflict.notice"
+                   after="codeatoz.campaign.stats.bar"/>
+            <uiComponent name="codeatoz_campaign_listing"/>
+        </referenceContainer>
+    </body>
+</page>

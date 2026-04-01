@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- Codeatoz top-level main menu item -->
+        <add id="Codeatoz_Campaign::codeatoz"
+             title="Codeatoz"
+             module="Codeatoz_Campaign"
+             sortOrder="51"
+             resource="Codeatoz_Campaign::campaign_manage"/>
+
+        <!-- Smart Campaigns as child of Codeatoz -->
+        <add id="Codeatoz_Campaign::campaign_list"
+             title="Smart Campaigns"
+             module="Codeatoz_Campaign"
+             sortOrder="10"
+             parent="Codeatoz_Campaign::codeatoz"
+             action="codeatoz_campaign/campaign/index"
+             resource="Codeatoz_Campaign::campaign_manage"/>
+    </menu>
+</config>

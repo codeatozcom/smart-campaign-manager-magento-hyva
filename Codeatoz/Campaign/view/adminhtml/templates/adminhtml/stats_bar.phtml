@@ -1,0 +1,100 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Codeatoz Campaign — Stats Bar
+ *
+ * @var \Codeatoz\Campaign\Block\Adminhtml\Campaign\StatsBar $block
+ */
+
+$active    = $block->getActiveCount();
+$scheduled = $block->getScheduledCount();
+$drafts    = $block->getDraftCount();
+$expired   = $block->getExpiredCount();
+$total     = $block->getTotalCount();
+$limit     = $block->getCampaignLimit();
+$remaining = max(0, $limit - $total);
+?>
+<div style="margin:0 0 16px;">
+
+    <!-- Stats cards row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px;">
+
+        <!-- Active Now -->
+        <div style="background:#fff;border:1px solid #e0e0e0;border-top:3px solid #137333;border-radius:6px;padding:16px 18px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5f6368;margin-bottom:8px;">
+                <?= $block->escapeHtml(__('Active Now')) ?>
+            </div>
+            <div style="font-size:32px;font-weight:700;color:#137333;line-height:1;margin-bottom:4px;">
+                <?= (int) $active ?>
+            </div>
+            <div style="font-size:12px;color:#5f6368;">
+                <?= $block->escapeHtml(__('Live on storefront')) ?>
+            </div>
+        </div>
+
+        <!-- Scheduled -->
+        <div style="background:#fff;border:1px solid #e0e0e0;border-top:3px solid #1a73e8;border-radius:6px;padding:16px 18px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5f6368;margin-bottom:8px;">
+                <?= $block->escapeHtml(__('Scheduled')) ?>
+            </div>
+            <div style="font-size:32px;font-weight:700;color:#1a73e8;line-height:1;margin-bottom:4px;">
+                <?= (int) $scheduled ?>
+            </div>
+            <div style="font-size:12px;color:#5f6368;">
+                <?= $block->escapeHtml(__('Queued to start')) ?>
+            </div>
+        </div>
+
+        <!-- Drafts -->
+        <div style="background:#fff;border:1px solid #e0e0e0;border-top:3px solid #9aa0a6;border-radius:6px;padding:16px 18px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5f6368;margin-bottom:8px;">
+                <?= $block->escapeHtml(__('Drafts')) ?>
+            </div>
+            <div style="font-size:32px;font-weight:700;color:#5f6368;line-height:1;margin-bottom:4px;">
+                <?= (int) $drafts ?>
+            </div>
+            <div style="font-size:12px;color:#5f6368;">
+                <?= $block->escapeHtml(__('Not yet published')) ?>
+            </div>
+        </div>
+
+        <!-- Expired -->
+        <div style="background:#fff;border:1px solid #e0e0e0;border-top:3px solid #c5221f;border-radius:6px;padding:16px 18px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#5f6368;margin-bottom:8px;">
+                <?= $block->escapeHtml(__('Expired')) ?>
+            </div>
+            <div style="font-size:32px;font-weight:700;color:#c5221f;line-height:1;margin-bottom:4px;">
+                <?= (int) $expired ?>
+            </div>
+            <div style="font-size:12px;color:#5f6368;">
+                <?= $block->escapeHtml(__('Ended campaigns')) ?>
+            </div>
+        </div>
+
+    </div>
+
+    <?php if ($remaining <= 1 && $total < $limit): ?>
+    <!-- Warning: approaching limit -->
+    <div style="padding:10px 16px;background:#fff8e5;border:1px solid #f0b429;border-radius:4px;font-size:13px;color:#7d4e00;display:flex;align-items:center;gap:8px;">
+        <span>⚠️</span>
+        <span>
+            <?= $block->escapeHtml(__('You are using %1 of %2 campaigns in the free edition. %3 slot remaining.', $total, $limit, $remaining)) ?>
+            <?= $block->escapeHtml(__('Upgrade to Pro for unlimited campaigns.')) ?>
+        </span>
+    </div>
+    <?php endif; ?>
+
+    <?php if ($total >= $limit): ?>
+    <!-- Campaign limit reached -->
+    <div style="padding:10px 16px;background:#fce8e6;border:1px solid #f28b82;border-radius:4px;font-size:13px;color:#c5221f;display:flex;align-items:center;gap:8px;">
+        <span>🚫</span>
+        <span>
+            <strong><?= $block->escapeHtml(__('Campaign limit reached.')) ?></strong>
+            <?= $block->escapeHtml(__('Free edition allows %1 campaigns. Delete an existing campaign or upgrade to Pro for unlimited.', $limit)) ?>
+        </span>
+    </div>
+    <?php endif; ?>
+
+</div>

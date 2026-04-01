@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Repository interface → concrete implementation -->
+    <preference for="Codeatoz\Campaign\Api\CampaignRepositoryInterface"
+                type="Codeatoz\Campaign\Repository\CampaignRepository"/>
+
+    <!-- Data interface → model implementation -->
+    <preference for="Codeatoz\Campaign\Api\Data\CampaignInterface"
+                type="Codeatoz\Campaign\Model\Campaign"/>
+
+</config>
